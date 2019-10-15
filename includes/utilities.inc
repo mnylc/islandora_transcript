@@ -21,8 +21,9 @@ function islandora_transcript_view_form(array $form, array $form_state, Abstract
      $transcript_ds[$ds] = $object[$ds]->label;
     }
   }
-
-  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: reset(array_keys($transcript_ds));
+  $keys =  array_keys($transcript_ds);
+  $first_key = current($keys);
+  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']:$first_key;
   $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
 
   $form['transcript_select'] = array(
