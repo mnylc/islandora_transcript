@@ -14,7 +14,7 @@
  * @return array
  *   A renderable array representing the tab.
  */
-function islandora_transcript_view_form(array $form, array $form_state, AbstractObject $object) {
+function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
 
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
@@ -32,7 +32,9 @@ function islandora_transcript_view_form(array $form, array $form_state, Abstract
     '#options' => $transcript_ds,
     '#default_value' => $current_ds,
     '#ajax' => array(
-     'callback' => 'ajax_transcript_select_callback',
+      'event' => 'change',
+      'method' => 'replace',
+      'callback' => 'ajax_transcript_select_callback',
       'wrapper' => 'transcript-container',
     ),
   );
@@ -48,9 +50,8 @@ function islandora_transcript_view_form(array $form, array $form_state, Abstract
     '#value' => t('Submit'),
 
   );
-  drupal_add_library('system', 'drupal.ajax');
-  drupal_add_library('system', 'drupal.form');
   $form['#tree'] = TRUE;
+  $form['#attached']['library'][] = 'core/drupal.ajax';
   return $form;
 }
 
