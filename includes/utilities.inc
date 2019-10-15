@@ -15,17 +15,16 @@
  *   A renderable array representing the tab.
  */
 function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
-
+  $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
-     $transcript_ds[$ds] = $object[$ds]->label;
+      $transcript_ds[$ds] = $object[$ds]->label;
     }
   }
   $keys =  array_keys($transcript_ds);
   $first_key = current($keys);
-  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']:$first_key;
+  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: $first_key;
   $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
-
   $form['transcript_select'] = array(
     '#type' => 'select',
     '#title' => 'Available Transcripts',
@@ -43,7 +42,7 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#markup' => '<pre>' . wordwrap($transcript) . '</pre>',
+    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'UTF-8', false) . '</pre>',
   );
 
   $form['submit'] = array(
@@ -52,17 +51,18 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
 
   );
   $form['#tree'] = TRUE;
-  $form['#attached']['library'][] = 'core/drupal.ajax';
-  $form['cache'] = false;
+  $form['#submit'][] = 'islandora_transcript_view_form_submit';
   return $form;
 }
 
 function islandora_transcript_view_form_submit(array $form, array &$form_state) {
   $form_state['rebuild'] = TRUE;
+
   return $form;
 }
 
 function ajax_transcript_select_callback(array $form, array &$form_state) {
+
   return $form['transcript'];
 }
 
