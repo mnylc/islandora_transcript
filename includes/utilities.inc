@@ -46,13 +46,14 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#markup' => '<pre>' . wordwrap($transcript) . '</pre>',
   );
 
-  /* $form['submit'] = array(
+  $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
 
-  );*/
+  );
   $form['#tree'] = TRUE;
   $form['#attached']['library'][] = 'core/drupal.ajax';
+  $form['cache'] = false;
   return $form;
 }
 
