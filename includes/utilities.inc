@@ -14,7 +14,7 @@
  * @return array
  *   A renderable array representing the tab.
  */
-function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
+function islandora_transcript_view_form(array $form, array $form_state, AbstractObject $object) {
   $pid = $object->id;
   $path = drupal_get_path('module', 'islandora_transcript');
   $form_state['object'] = $object;
@@ -59,12 +59,15 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
 
   );
   drupal_add_library('system', 'drupal.ajax');
+  drupal_add_library('system', 'drupal.form');
+  $form['#tree'] = TRUE;
   return $form;
 }
 
-/* function islandora_transcript_view_form_submit(array $form, array &$form_state, AbstractObject $object) {
-
-} */
+function islandora_transcript_view_form_submit(array $form, array &$form_state, AbstractObject $object) {
+  $form_state['rebuild'] = TRUE;
+  return $form;
+}
 
 function ajax_transcript_select_callback(array $form, array &$form_state) {
   return $form['transcript'];
