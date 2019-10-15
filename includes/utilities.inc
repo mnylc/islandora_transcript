@@ -58,6 +58,7 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#value' => t('Submit'),
 
   );
+  drupal_add_library('system', 'drupal.ajax');
   return $form;
 }
 
