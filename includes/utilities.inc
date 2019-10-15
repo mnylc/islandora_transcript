@@ -14,14 +14,61 @@
  * @return array
  *   A renderable array representing the tab.
  */
-function islandora_transcript_view(AbstractObject $object) {
-  $transcript = $object['TRANSCRIPT']->content;
-  return array(
-    'transcript' => array(
-      '#markup' => '<pre>' . wordwrap($transcript) . '</pre>',
+function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
+  $pid = $object->id;
+  $path = drupal_get_path('module', 'islandora_transcript');
+  $form_state['object'] = $object;
+  $form = array();
+  $label = $object->label;
+  // Get all Transcript DS and check access
+
+  foreach ($object as $ds => $value) {
+    if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
+     $transcript_ds[$ds] = $object[$ds]->label;
+    }
+  }
+
+  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: reset(array_keys($transcript_ds));
+  $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
+
+  $form['transcript_select'] = array(
+    '#type' => 'select',
+    '#title' => 'Available Transcripts',
+    '#options' => $transcript_ds,
+    '#default_value' => $current_ds,
+    '#ajax' => array(
+     'callback' => 'ajax_transcript_select_callback',
+      'wrapper' => 'transcript-container',
     ),
   );
+
+  $form['transcript'] = array(
+    '#type' => 'markup',
+    '#title' => '',
+    // The entire enclosing div created here gets replaced when dropdown_first
+    // is changed.
+    '#prefix' => '<div id="transcript-container">',
+    '#suffix' => '</div>',
+    // When the form is rebuilt during ajax processing, the $selected variable
+    // will now have the new value and so the options will change.
+    '#markup' => '<pre>' . wordwrap($transcript) . '</pre>',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+
+  );
+  return $form;
 }
+
+/* function islandora_transcript_view_form_submit(array $form, array &$form_state, AbstractObject $object) {
+
+} */
+
+function ajax_transcript_select_callback(array $form, array &$form_state) {
+  return $form['transcript'];
+}
+
 
 /**
  * Updates this object's TRANSCRIPT datastream.
