@@ -45,17 +45,18 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#suffix' => '</div>',
     '#markup' => '<pre>' . wordwrap($transcript) . '</pre>',
   );
-  $form['submit'] = array(
+
+  /* $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
 
-  );
+  );*/
   $form['#tree'] = TRUE;
   $form['#attached']['library'][] = 'core/drupal.ajax';
   return $form;
 }
 
-function islandora_transcript_view_form_submit(array $form, array &$form_state, AbstractObject $object) {
+function islandora_transcript_view_form_submit(array $form, array &$form_state) {
   $form_state['rebuild'] = TRUE;
   return $form;
 }
