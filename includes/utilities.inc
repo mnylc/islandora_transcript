@@ -92,7 +92,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
   $first_key = current($keys);
   $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: $first_key;
   $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
-
+  unset($form_state['input']['transcript']);
   $form['transcript_select'] = array(
     '#type' => 'select',
     '#title' => 'Available Transcripts',
@@ -129,7 +129,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
 
 function ajax_transcript_edit_callback(array $form, array &$form_state) {
   error_log(var_export($form['transcript'],true));
-  unset($form_state['input']['transcript']);
+
   return $form['transcript'];
 }
 
