@@ -145,7 +145,7 @@ function islandora_transcript_edit_transcript_form_submit(array $form, array &$f
   $object = islandora_object_load($form_state['values']['pid']);
   $success = TRUE;
   try {
-    $object[$ds]->content = $form_state['values']['transcript'];
+    $object[$ds]->content = utf8_decode($form_state['values']['transcript']);
   }
   catch (Exception $e) {
     $success = FALSE;
