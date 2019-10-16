@@ -78,7 +78,7 @@ function ajax_transcript_select_callback(array $form, array &$form_state) {
  *   The Drupal form definition.
  */
 function islandora_transcript_edit_transcript_form(array $form, array &$form_state, AbstractObject $object) {
-
+  $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$ds])) {
       $label = substr($ds, strlen('TRANSCRIPT'));
@@ -93,7 +93,6 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
   $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: $first_key;
   $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
 
-  $form = array();
   $form['transcript_select'] = array(
     '#type' => 'select',
     '#title' => 'Available Transcripts',
@@ -102,14 +101,14 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
     '#ajax' => array(
       'event' => 'change',
       'method' => 'replace',
-      'callback' => 'ajax_transcript_select_callback',
-      'wrapper' => 'transcript-container-edit',
+      'callback' => 'ajax_transcript_edit_callback',
+      'wrapper' => 'transcript-container-update',
     ),
   );
   $form['transcript'] = array(
     '#title' => t('Current Transcript'),
     '#type' => 'textarea',
-    '#prefix' => '<div id="transcript-container-edit">',
+    '#prefix' => '<div id="transcript-container-update">',
     '#suffix' => '</div>',
     '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1','UTF-8'),
     '#rows' => 40,
@@ -124,7 +123,13 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
     '#type' => 'hidden',
     '#value' => $object->id,
   );
+  $form['#tree'] = TRUE;
   return $form;
+}
+
+function ajax_transcript_edit_callback(array $form, array &$form_state) {
+  error_log(var_export($form['transcript'],true));
+  return $form['transcript'];
 }
 
 /**
