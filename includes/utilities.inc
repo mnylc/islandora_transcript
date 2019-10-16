@@ -49,7 +49,7 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
     '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre><br>'.
-      l($label, islandora_datastream_get_url($object[$current_ds], 'download')),
+      l($label, islandora_datastream_get_url($object[$current_ds], "Download {$transcript_ds[$ds]}")),
   );
 
 
