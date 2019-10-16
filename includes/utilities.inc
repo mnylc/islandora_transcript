@@ -44,7 +44,7 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
   // Note. we are forcing here ISO because of the data we are dealing with
   // But the right format should be UTF-8. Sadly people are not encoding
   // their transcripts correctly.
-  $download_link = l("Download {$transcript_ds[$ds]}", islandora_datastream_get_url($object[$current_ds], 'download'));
+  $download_link = l("Download {$transcript_ds[$current_ds]}", islandora_datastream_get_url($object[$current_ds], 'download'));
   $form['transcript'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
