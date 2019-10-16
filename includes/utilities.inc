@@ -18,7 +18,9 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
   $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
-      $transcript_ds[$ds] = $object[$ds]->label;
+      $label = substr($ds, 0,strlen('TRANSCRIPT'));
+      $label = strlen($label) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
+      $transcript_ds[$ds] = $label;
     }
   }
   $keys =  array_keys($transcript_ds);
@@ -58,13 +60,11 @@ function islandora_transcript_view_form_submit(array $form, array &$form_state) 
 }
 
 function ajax_transcript_select_callback(array $form, array &$form_state) {
-
   return $form['transcript'];
 }
 
-
 /**
- * Updates this object's TRANSCRIPT datastream.
+ * Updates this object's TRANSCRIPT datastreams.
  *
  * @param array $form
  *   The Drupal form definition.
@@ -77,15 +77,36 @@ function ajax_transcript_select_callback(array $form, array &$form_state) {
  *   The Drupal form definition.
  */
 function islandora_transcript_edit_transcript_form(array $form, array &$form_state, AbstractObject $object) {
-  $pid = $object->id;
-  $path = drupal_get_path('module', 'islandora_transcript');
-  $form_state['object'] = $object;
+
+  foreach ($object as $ds => $value) {
+    if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$ds])) {
+      $label = substr($ds, 0,strlen('TRANSCRIPT'));
+      $label = strlen($label) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
+      $transcript_ds[$ds] = $label;
+    }
+  }
+  $keys =  array_keys($transcript_ds);
+  $first_key = current($keys);
+  $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: $first_key;
+  $transcript = isset($object[$current_ds]) ? $object[$current_ds]->content : 'Sorry, there is no transcript available';
+
   $form = array();
-  $label = $object->label;
+  $form['transcript_select'] = array(
+    '#type' => 'select',
+    '#title' => 'Available Transcripts',
+    '#options' => $transcript_ds,
+    '#default_value' => $current_ds,
+    '#ajax' => array(
+      'event' => 'change',
+      'method' => 'replace',
+      'callback' => 'ajax_transcript_select_callback',
+      'wrapper' => 'transcript-container',
+    ),
+  );
   $form['transcript'] = array(
     '#title' => t('Current Transcript'),
     '#type' => 'textarea',
-    '#default_value' => $object['TRANSCRIPT']->content,
+    '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1'),
     '#rows' => 40,
     '#cols' => 20,
     '#attributes' => array('class' => array('transcript_window')),
