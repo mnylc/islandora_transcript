@@ -15,6 +15,7 @@
  *   A renderable array representing the tab.
  */
 function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
+  form_load_include('inc', 'islandora', 'includes/datastream');
   $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
@@ -47,14 +48,11 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre>',
+    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre><br>'.
+      l($label, islandora_datastream_get_url($object[$current_ds], 'download')),
   );
 
-  $form['download'] = array(
-    '#type' => 'markup',
-    '#markup' => theme('islandora_datastream_download_link',
-    array('datastream' => $object[$current_ds])),
-  );
+
 
   $form['#tree'] = TRUE;
   $form['#submit'][] = 'islandora_transcript_view_form_submit';
