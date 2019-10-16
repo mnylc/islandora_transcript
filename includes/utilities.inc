@@ -80,9 +80,9 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
 
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$ds])) {
-      $label = substr($ds, 0,strlen('TRANSCRIPT'));
-      $label = strlen($label) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
-      $transcript_ds[$ds] = $label;
+      $label = substr($ds, 0, strlen('TRANSCRIPT'));
+      $display_label = (strlen($label) != 0) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
+      $transcript_ds[$ds] = $display_label;
     }
   }
   $keys =  array_keys($transcript_ds);
