@@ -13,8 +13,8 @@ function islandora_transcript_menu() {
     'islandora/object/%islandora_object/transcript' => array(
       'title' => 'Transcript',
       'type' => MENU_LOCAL_TASK,
-      'page callback' => 'islandora_transcript_view',
-      'page arguments' => array(2),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('islandora_transcript_view_form',2),
       'access callback' => 'islandora_transcript_view_access',
       'access arguments' => array(2),
       'file' => 'includes/utilities.inc',
@@ -34,8 +34,7 @@ function islandora_transcript_menu() {
 /**
  * Access callback.
  *
- * Requires that the given object contains a TRANSCRIPT datastream (and to be
- * viewable, as per the stock permissions).
+ * Allows Objects with datastream names that starts with 'TRANSCRIPT'.
  *
  * @param AbstractObject $object
  *   The object to test, if NULL the given object doesn't exist or is
@@ -45,15 +44,25 @@ function islandora_transcript_menu() {
  *   TRUE if the user is allowed to access the transcript interface, FALSE
  *   otherwise.
  */
-function islandora_transcript_view_access($object) {
-  return is_object($object) && isset($object['TRANSCRIPT']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TRANSCRIPT']);
+function islandora_transcript_view_access(AbstractObject $object) {
+  $access = FALSE;
+  if (is_object($object)) {
+
+    foreach ($object as $ds => $value) {
+      if (strpos($ds,'TRANSCRIPT') === 0) {
+        $access = $access || islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds]);
+      }
+    }
+  }
+  // Note: this is access to the tab. Individual DS access will be checked in
+  // the controller too.
+  return $access;
 }
 
 /**
  * Access callback.
  *
- * Requires that the given object contains a TRANSCRIPT datastream (and to be
- * viewable, as per the stock permissions).
+ * Allows Objects with datastream names that starts with 'TRANSCRIPT'.
  *
  * @param AbstractObject $object
  *   The object to test, if NULL the given object doesn't exist or is
@@ -64,15 +73,27 @@ function islandora_transcript_view_access($object) {
  *   otherwise.
  */
 function islandora_transcript_edit_access($object) {
-  return is_object($object) && isset($object['TRANSCRIPT']) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object['TRANSCRIPT']);
+  $access = FALSE;
+  if (is_object($object)) {
+
+    foreach ($object as $ds => $value) {
+      if (strpos($ds,'TRANSCRIPT') === 0) {
+        $access = $access || islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$ds]);
+      }
+    }
+  }
+  // Note: this is access to the tab. Individual DS edit access will be checked in
+  // the form too.
+  return $access;
 }
 
 /**
  * Implements hook_islandora_edit_datastream_registry().
  */
 function islandora_transcript_islandora_edit_datastream_registry(AbstractObject $object, AbstractDatastream $datastream) {
+  // We will have an unified DS edit form
   $routes = array();
-  if ($datastream->id == "TRANSCRIPT") {
+  if (strpos($datastream->id,'TRANSCRIPT') === 0) {
     $routes[] = array(
       'name' => t('Edit TRANSCRIPT datastream'),
       'url' => "islandora/object/{$object->id}/TRANSCRIPT-edit",
