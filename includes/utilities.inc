@@ -141,17 +141,17 @@ function ajax_transcript_edit_callback(array $form, array &$form_state) {
  */
 function islandora_transcript_edit_transcript_form_submit(array $form, array &$form_state) {
   module_load_include('inc', 'islandora_transcript', 'includes/utilities');
-  error_log('called islandora_transcript_edit_transcript_form_submit');
+  $ds = $form_state['values']['transcript_select'];
   $object = islandora_object_load($form_state['values']['pid']);
   $success = TRUE;
   try {
-    $object["TRANSCRIPT"]->content = $form_state['values']['transcript'];
+    $object[$ds]->content = $form_state['values']['transcript'];
   }
   catch (Exception $e) {
     $success = FALSE;
-    drupal_set_message(t("TRANSCRIPT update failed."));
+    drupal_set_message(t("@ds update failed.", array('@ds' => $ds)));
   }
   if ($success) {
-    drupal_set_message(t("TRANSCRIPT successfully updated."));
+    drupal_set_message(t("@ds successfully updated.", array('@ds' => $ds)));
   }
 }
