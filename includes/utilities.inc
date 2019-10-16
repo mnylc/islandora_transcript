@@ -15,7 +15,7 @@
  *   A renderable array representing the tab.
  */
 function islandora_transcript_view_form(array $form, array &$form_state, AbstractObject $object) {
-  form_load_include('inc', 'islandora', 'includes/datastream');
+  form_load_include($form_state,'inc', 'islandora', 'includes/datastream');
   $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
@@ -44,12 +44,12 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
   // Note. we are forcing here ISO because of the data we are dealing with
   // But the right format should be UTF-8. Sadly people are not encoding
   // their transcripts correctly.
+  $download_link = l($label, islandora_datastream_get_url($object[$current_ds], "Download {$transcript_ds[$ds]}"));
   $form['transcript'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre><br>'.
-      l($label, islandora_datastream_get_url($object[$current_ds], "Download {$transcript_ds[$ds]}")),
+    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre><br>'.$download_link,
   );
 
 
