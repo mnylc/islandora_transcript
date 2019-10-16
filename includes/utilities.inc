@@ -18,9 +18,10 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
   $form = array();
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$ds])) {
-      $label = substr($ds, 0,strlen('TRANSCRIPT'));
-      $label = strlen($label) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
-      $transcript_ds[$ds] = $label;
+      $label = substr($ds, strlen('TRANSCRIPT'));
+      $label = str_replace('_','',$label);
+      $display_label = (strlen($label) != 0) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
+      $transcript_ds[$ds] = $display_label;
     }
   }
   $keys =  array_keys($transcript_ds);
@@ -80,7 +81,8 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
 
   foreach ($object as $ds => $value) {
     if ((strpos($ds,'TRANSCRIPT') === 0) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$ds])) {
-      $label = substr($ds, 0, strlen('TRANSCRIPT')-1);
+      $label = substr($ds, strlen('TRANSCRIPT'));
+      $label = str_replace('_','',$label);
       $display_label = (strlen($label) != 0) ? t("Translated Transcript to @lang",array('@lang' => $label)) : t("Transcript in original language");
       $transcript_ds[$ds] = $display_label;
     }
@@ -108,7 +110,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
     '#type' => 'textarea',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1','ASCII'),
+    '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1','auto'),
     '#rows' => 40,
     '#cols' => 20,
     '#attributes' => array('class' => array('transcript_window')),
