@@ -110,7 +110,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
     '#type' => 'textarea',
     '#prefix' => '<div id="transcript-container-update">',
     '#suffix' => '</div>',
-    '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1','UTF-8'),
+    '#default_value' => htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) ,
     '#rows' => 40,
     '#cols' => 20,
     '#attributes' => array('class' => array('transcript_window')),
@@ -128,8 +128,6 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
 }
 
 function ajax_transcript_edit_callback(array $form, array &$form_state) {
-  error_log(var_export($form['transcript'],true));
-
   return $form['transcript'];
 }
 
