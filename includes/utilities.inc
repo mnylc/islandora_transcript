@@ -37,19 +37,16 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
       'wrapper' => 'transcript-container',
     ),
   );
-
+  // Note. we are forcing here ISO because of the data we are dealing with
+  // But the right format should be UTF-8. Sadly people are not encoding
+  // their transcripts correctly.
   $form['transcript'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'UTF-8', false) . '</pre>',
+    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre>',
   );
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-
-  );
   $form['#tree'] = TRUE;
   $form['#submit'][] = 'islandora_transcript_view_form_submit';
   return $form;
@@ -57,7 +54,6 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
 
 function islandora_transcript_view_form_submit(array $form, array &$form_state) {
   $form_state['rebuild'] = TRUE;
-
   return $form;
 }
 
