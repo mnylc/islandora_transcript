@@ -129,6 +129,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
 
 function ajax_transcript_edit_callback(array $form, array &$form_state) {
   error_log(var_export($form['transcript'],true));
+  unset($form_state['input']['transcript']);
   return $form['transcript'];
 }
 
