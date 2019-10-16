@@ -50,6 +50,11 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
     '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre>',
   );
 
+  $form['download'] = array(
+    '#theme' => 'islandora_datastream_download_link',
+    'datastream' => $ds,
+  );
+
   $form['#tree'] = TRUE;
   $form['#submit'][] = 'islandora_transcript_view_form_submit';
   return $form;
