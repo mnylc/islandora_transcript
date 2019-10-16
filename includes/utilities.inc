@@ -87,6 +87,7 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
       $transcript_ds[$ds] = $display_label;
     }
   }
+  // If we are here it is because there is at least one editable Datastream.
   $keys =  array_keys($transcript_ds);
   $first_key = current($keys);
   $current_ds = isset($form_state['values']['transcript_select'])? $form_state['values']['transcript_select']: $first_key;
@@ -102,13 +103,13 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
       'event' => 'change',
       'method' => 'replace',
       'callback' => 'ajax_transcript_select_callback',
-      'wrapper' => 'transcript-container',
+      'wrapper' => 'transcript-container-edit',
     ),
   );
   $form['transcript'] = array(
     '#title' => t('Current Transcript'),
     '#type' => 'textarea',
-    '#prefix' => '<div id="transcript-container">',
+    '#prefix' => '<div id="transcript-container-edit">',
     '#suffix' => '</div>',
     '#default_value' => mb_convert_encoding($transcript, 'ISO-8859-1','auto'),
     '#rows' => 40,
