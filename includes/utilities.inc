@@ -51,8 +51,9 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
   );
 
   $form['download'] = array(
-    '#theme' => 'islandora_datastream_download_link',
-    'datastream' => $ds,
+    '#type' => 'markup',
+    '#markup' => theme('islandora_datastream_download_link',
+    array('datastream' => $object[$current_ds])),
   );
 
   $form['#tree'] = TRUE;
