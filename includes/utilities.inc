@@ -41,15 +41,25 @@ function islandora_transcript_view_form(array $form, array &$form_state, Abstrac
       'wrapper' => 'transcript-container',
     ),
   );
-  // Note. we are forcing here ISO because of the data we are dealing with
-  // But the right format should be UTF-8. Sadly people are not encoding
+
+  // Right format should be UTF-8. Sadly people are not encoding
   // their transcripts correctly.
+  $enclist = array(
+    'UTF-8', 'ASCII',
+    'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5',
+    'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10',
+    'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16',
+    'Windows-1251', 'Windows-1252', 'Windows-1254',
+  );
+  $from = mb_detect_encoding($transcript, $enclist, true);
   $download_link = l("Download {$transcript_ds[$current_ds]}", islandora_datastream_get_url($object[$current_ds], 'download'));
   $form['transcript'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="transcript-container">',
     '#suffix' => '</div>',
-    '#markup' => '<pre>' . htmlentities($transcript, ENT_SUBSTITUTE, 'ISO-8859-1', false) . '</pre><br>'.$download_link,
+    '#markup' => $from.'<pre>' . mb_convert_encoding($transcript,'UTF-8',$from). '</pre><br>'.$download_link,
+
+
   );
 
 
@@ -109,12 +119,22 @@ function islandora_transcript_edit_transcript_form(array $form, array &$form_sta
       'wrapper' => 'transcript-container-update',
     ),
   );
+
+  $enclist = array(
+    'UTF-8', 'ASCII',
+    'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5',
+    'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10',
+    'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16',
+    'Windows-1251', 'Windows-1252', 'Windows-1254',
+  );
+  $from = mb_detect_encoding($transcript, $enclist, true);
+
   $form['transcript'] = array(
     '#title' => t('Current Transcript'),
     '#type' => 'textarea',
     '#prefix' => '<div id="transcript-container-update">',
     '#suffix' => '</div>',
-    '#default_value' => utf8_encode($transcript),
+    '#default_value' => mb_convert_encoding($transcript,'UTF-8',$from),
     '#rows' => 40,
     '#cols' => 20,
     '#attributes' => array('class' => array('transcript_window')),
@@ -149,6 +169,7 @@ function islandora_transcript_edit_transcript_form_submit(array $form, array &$f
   $object = islandora_object_load($form_state['values']['pid']);
   $success = TRUE;
   try {
+    // Not sure. We should store as utf8 natively?
     $object[$ds]->content = utf8_decode($form_state['values']['transcript']);
   }
   catch (Exception $e) {
